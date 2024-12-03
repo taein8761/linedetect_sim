@@ -1,8 +1,15 @@
+#include <signal.h> // SIGINT와 signal() 선언 헤더
 #include <iostream>
 #include "opencv2/opencv.hpp"
-// 시간 관련 함수도 사용할 수 있도록 포함
+#include "dxl.hpp"
+
 using namespace std;
 using namespace cv;
+
+volatile bool ctrl_c_pressed = false; // Ctrl+C 감지 변수
+void signalHandler(int) {
+    ctrl_c_pressed = true; // Ctrl+C 눌림 플래그 설정
+}
 
 // 전처리 및 ROI(관심영역) 설정
 void preprocess(VideoCapture& source, Mat& frame, Mat& gray, Mat& bin) {
@@ -115,11 +122,17 @@ int main() {
     VideoWriter writer2(dst,0, (double)30,Size(640,90),true);
     if(!writer2.isOpened()) {cerr<<"Writer open failed!"<<endl; return -1;}
 
+    TickMeter tm;
     bool isFirstFrame = true;  // 첫 번째 프레임인지 확인하는 변수
     Point mainPoint, subPoint;  // mainPoint는 화면의 목표 지점
     Mat frame, gray, bin, outputImg, stats, centroids;
-    int Error;
+    int error;
 
+    Dxl dxl;
+    if(!dxl.open()) { cout << "dynamixel open error"<<endl; return -1; }
+
+    bool mode =false; //다이나믹 셀 start/stop
+    double k = 0.5; //다이나믹셀 조정값
     while (true) {
         preprocess(source, frame, gray, bin);  // 전처리 함수 호출
         
@@ -137,12 +150,35 @@ int main() {
         writer2 << outputImg; // 하단 1/4 이진화
 
         // 목표 지점과 실제 위치 차이 계산
-        Error = (outputImg.cols / 2) - mainPoint.x;
-        cout << "error:" << Error << ", time: " << endl;
+        error = (outputImg.cols / 2) - mainPoint.x;
+        
+        //다이나믹셀 바퀴 계산
+        // 라인 검출코드 -> error 계산
+        if(dxl.kbhit()) // 없으면 제어 멈춤
+        {
+            char ch = dxl.getch();
+            if(ch == 'q') break;
+            else if(ch == 's') {
+                mode = !mode; // 모드 토글
+                }
+        }
+
+        signal(SIGINT, signalHandler); // SIGINT(Ctrl+C) 처리 핸들러 등록
+        if (ctrl_c_pressed) break;
+        int leftvel = 100 - k* error;
+        int rightvel = -(100 + k* error);
+
+        if(mode) {
+            dxl.setVelocity(leftvel, rightvel);
+        }
+        tm.stop();
+        cout << "error:" << error << " ,lvel:" << leftvel << "," << 
+        "rvel:" << rightvel << "time:" << tm << endl;
 
         // 'q'를 누르면 종료
         if (waitKey(30) == 'q') break;
+        tm.reset();  
     }
-
+    dxl.close();
     return 0;  // 프로그램 종료
 }

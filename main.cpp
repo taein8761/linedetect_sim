@@ -1,5 +1,5 @@
 #include "vision.hpp"
-
+#include <unistd.h>
 int main() {
     VideoCapture source("5.mp4");
 	if (!source.isOpened()) { cout << "Camera error" << endl; return -1; }
@@ -18,7 +18,7 @@ int main() {
     VideoWriter writer2(dst,0, (double)30,Size(640,90),true);
     if(!writer2.isOpened()) {cerr<<"Writer open failed!"<<endl; return -1;}
 
-    TickMeter tm;
+    TickMeter tm,tm2;
     bool isFirstFrame = true;  // 첫 번째 프레임인지 확인하는 변수
     Point mainPoint, subPoint;  // mainPoint는 화면의 목표 지점
     Mat frame, gray, bin, outputImg, stats, centroids;
@@ -31,6 +31,7 @@ int main() {
     double k = 0.13; //다이나믹셀 조정값
     while (true) {
         tm.start();
+        tm2.start();
         preprocess(source, frame, gray, bin);  // 전처리 함수 호출
         
         if (isFirstFrame) {
@@ -66,6 +67,11 @@ int main() {
         if(mode) {
             dxl.setVelocity(leftvel, rightvel);
         }
+        tm2.stop();
+
+        int sleep = 33 * 1000-tm2.getTimeMicro();  //0.03초를 맞추기 위한 sleep
+        if(sleep < 0) sleep = 0;
+        usleep(sleep);
 
         tm.stop();
 
@@ -73,9 +79,8 @@ int main() {
            << "rvel:" << rightvel << ", time:" << fixed << setprecision(9) << tm.getTimeSec() << endl;
 
 
-        // 'q'를 누르면 종료
-        if (waitKey(30) == 'q') break;
         tm.reset();  
+        tm2.reset();
     }
     dxl.close();
     return 0;  // 프로그램 종료

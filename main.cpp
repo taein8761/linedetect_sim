@@ -60,8 +60,8 @@ int main() {
 
         signal(SIGINT, signalHandler); // SIGINT(Ctrl+C) 처리 핸들러 등록
         if (ctrl_c_pressed) break;
-        int leftvel = 200 - k* error;
-        int rightvel = -(200 + k* error);
+        int leftvel = 100 - k* error;
+        int rightvel = -(100 + k* error);
 
         if(mode) {
             dxl.setVelocity(leftvel, rightvel);

@@ -1,4 +1,7 @@
 #include "vision.hpp"
+
+volatile bool ctrl_c_pressed = false;  // main.cpp에서만 정의
+
 // 전처리 및 ROI(관심영역) 설정
 void preprocess(VideoCapture& source, Mat& frame, Mat& gray, Mat& bin) {
     source >> frame;  // 비디오에서 한 프레임을 읽어옴
@@ -25,6 +28,7 @@ void preprocess(VideoCapture& source, Mat& frame, Mat& gray, Mat& bin) {
 
     bin = bin(Roi);  // 관심영역만 잘라서 bin에 저장
 }
+
 // 객체 탐지
 void detectObj(const Mat& bin, Point& mainPoint, Point& subPoint, Mat& outputImg, Mat& stats, Mat& centroids) {
     Mat label;
@@ -35,7 +39,7 @@ void detectObj(const Mat& bin, Point& mainPoint, Point& subPoint, Mat& outputImg
     cvtColor(outputImg, outputImg, COLOR_GRAY2BGR);  // 이미지를 컬러로 변환
 
     int closestObj = -1;  // 가장 가까운 객체의 인덱스
-    int mindist = outputImg.cols;  // 최소 거리, 초기값을 화면의 너비로 설정--------------------수정
+    int mindist = outputImg.cols;  // 최소 거리, 초기값을 화면의 너비로 설정
 
     // 객체들을 반복하면서 가장 가까운 객체를 찾기
     for (int i = 1; i < numObjects; i++) {
@@ -45,7 +49,7 @@ void detectObj(const Mat& bin, Point& mainPoint, Point& subPoint, Mat& outputImg
 
             // 객체 중심과 mainPoint 간의 거리 계산
             int dist = norm(center - mainPoint);
-            if (dist <= 140 && dist < mindist) {  // mainPoint와 가까운 객체를 찾음--------------------수정
+            if (dist <= 140 && dist < mindist) {  // mainPoint와 가까운 객체를 찾음
                 mindist = dist;  // 최소 거리 갱신
                 closestObj = i;  // 가장 가까운 객체의 인덱스를 저장
             }
@@ -53,14 +57,15 @@ void detectObj(const Mat& bin, Point& mainPoint, Point& subPoint, Mat& outputImg
     }
 
     // 가장 가까운 객체가 있으면 mainPoint를 해당 객체의 중심으로 업데이트
-    if (closestObj > 0) { //--------------------수정(">=" -> ">")
+    if (closestObj > 0) {
         mainPoint = Point(cvRound(centroids.at<double>(closestObj, 0)),
             cvRound(centroids.at<double>(closestObj, 1)));
     }
     else {
-        cout << "객체 이탈" << endl;
+        //객체 이탈 
     }
 }
+
 // 객체 표시
 void markObj(const Mat& stats, const Mat& centroids, const Point& mainPoint, Mat& outputImg) {
     const Scalar MAIN_COLOR = Scalar(0, 0, 255);  // 목표 지점 색상 (빨간색)
@@ -76,10 +81,6 @@ void markObj(const Mat& stats, const Mat& centroids, const Point& mainPoint, Mat
             Point center(cvRound(centroids.at<double>(i, 0)), cvRound(centroids.at<double>(i, 1)));
             // 객체가 mainPoint와 같으면 빨간색, 아니면 파란색
             Scalar color = (center.x == mainPoint.x) ? MAIN_COLOR : OBJECT_COLOR;
-            /*Scalar color(0,0,0);
-            if (center.x != mainPoint.x) {
-                color = OBJECT_COLOR;
-            }*/
 
             // 객체의 경계 상자와 객체 중심에 원 그리기
             rectangle(outputImg,
@@ -92,4 +93,8 @@ void markObj(const Mat& stats, const Mat& centroids, const Point& mainPoint, Mat
     }
     //따라가는 포인트
     circle(outputImg, mainPoint, 5, MAIN_COLOR, -1);
+}
+
+void signalHandler(int) {
+    ctrl_c_pressed = true; // Ctrl+C 눌림 플래그 설정
 }

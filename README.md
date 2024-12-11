@@ -1,6 +1,7 @@
 # linedetect_sim
 # 전체 블록도 
-![image](https://github.com/user-attachments/assets/4a11a061-097a-4af5-9890-b415666e47f4)
+![image](https://github.com/user-attachments/assets/e4d0dcae-160f-4d23-ab07-221a750481fd)
+
 
 # 1. 라인 검출
 

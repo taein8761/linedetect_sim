@@ -1,10 +1,13 @@
 # linedetect_sim
 
 # 1. 라인 검출
-##
+
 설명: 프로그램이 실행 중에 Ctrl+C 입력을 감지하기 위해 사용하는 변수입니다.
 
 목적: 프로그램 종료를 위해 신호 처리 함수(signalHandler)에서 이 값을 변경합니다
+```
+volatile bool ctrl_c_pressed = false;
+```
 ##
 기능: 비디오 프레임을 전처리하여 관심 영역(ROI)을 설정하고 이진화된 이미지를 생성합니다.
 

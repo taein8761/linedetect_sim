@@ -1,6 +1,7 @@
 # linedetect_sim
 
 1. 라인 검출
+   
 5번 영상 (out 라인)
 https://github.com/user-attachments/assets/2c7b4cca-d7ea-4661-aa09-77735ee17bd1
 

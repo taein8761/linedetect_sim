@@ -25,31 +25,7 @@ ROI 설정: 화면의 아래쪽 90px만 잘라 관심 영역으로 지정.
 
 ```
 // 전처리 및 ROI(관심영역) 설정
-void preprocess(VideoCapture& source, Mat& frame, Mat& gray, Mat& bin) {
-    source >> frame;  // 비디오에서 한 프레임을 읽어옴
-    if (frame.empty()) {  // 프레임이 비어 있으면 오류 메시지 출력
-        cerr << "Empty frame encountered!" << endl;
-        return;
-    }
-
-    cvtColor(frame, gray, COLOR_BGR2GRAY);  // 컬러 이미지를 그레이스케일로 변환
-    Scalar avgBright = mean(gray); // 이미지의 평균 밝기를 구함
-    // 이미지 밝기를 조정: 평균 밝기와 원하는 밝기(100)의 차이를 더함
-    gray = gray + (100 - avgBright[0]);
-
-    // 이진화: 밝기가 128 이상이면 흰색, 그렇지 않으면 검은색으로 변환
-    threshold(gray, bin, 128, 255, THRESH_BINARY);
-
-    // 화면의 원하는 크기 (640x90)
-    int outputWidth = 640;
-    int outputHeight = 90;
-
-    // 화면의 아래쪽 90px을 잘라서 관심영역(ROI) 설정
-    int RoiHeight = bin.rows - outputHeight;
-    Rect Roi(0, RoiHeight, outputWidth, outputHeight);
-
-    bin = bin(Roi);  // 관심영역만 잘라서 bin에 저장
-}
+void preprocess(VideoCapture& source, Mat& frame, Mat& gray, Mat& bin)
 ```
 
 

@@ -188,6 +188,18 @@ https://github.com/user-attachments/assets/8ea1fd0f-e510-4484-964e-03f432a571b9
 - 로봇은 감지된 라인의 중심을 기준으로 이동하며 경로를 벗어나지 않도록 제어됩니다.
 - 장애물이 감지되거나 경로가 사라질 경우, 목표 지점(`mainPoint`)의 업데이트를 통해 다음 행동을 결정합니다.
 - **실시간 키 입력**으로 작동 상태를 제어하거나 프로그램을 종료할 수 있습니다.
+5번 실제 동작영상 (out 라인)
+
+
+https://github.com/user-attachments/assets/f12ced1b-3158-4691-a7fc-aa249f986755
+
+
+
+7번 실제 동작영상 (in 라인)
+
+
+https://github.com/user-attachments/assets/b21756fb-2a4a-4f68-99b6-7f0034d88a46
+
 
 ---
 

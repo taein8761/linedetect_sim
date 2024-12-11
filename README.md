@@ -2,13 +2,19 @@
 
 # 1. 라인 검출
 
-설명: 프로그램이 실행 중에 Ctrl+C 입력을 감지하기 위해 사용하는 변수입니다.
-
-목적: 프로그램 종료를 위해 신호 처리 함수(signalHandler)에서 이 값을 변경합니다
 ```
 volatile bool ctrl_c_pressed = false;
 ```
-##
+
+설명: 프로그램이 실행 중에 Ctrl+C 입력을 감지하기 위해 사용하는 변수입니다.
+
+목적: 프로그램 종료를 위해 신호 처리 함수(signalHandler)에서 이 값을 변경합니다
+
+```
+// 전처리 및 ROI(관심영역) 설정
+void preprocess(VideoCapture& source, Mat& frame, Mat& gray, Mat& bin)
+```
+
 기능: 비디오 프레임을 전처리하여 관심 영역(ROI)을 설정하고 이진화된 이미지를 생성합니다.
 
 작업 흐름: 비디오 프레임 읽기: source >> frame으로 한 프레임을 가져옵니다.
@@ -23,10 +29,6 @@ ROI 설정: 화면의 아래쪽 90px만 잘라 관심 영역으로 지정.
 
 결과: bin에 관심 영역의 이진화된 이미지가 저장됩니다.
 
-```
-// 전처리 및 ROI(관심영역) 설정
-void preprocess(VideoCapture& source, Mat& frame, Mat& gray, Mat& bin)
-```
 
 
 5번 영상 (out 라인)

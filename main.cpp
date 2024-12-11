@@ -32,7 +32,7 @@ int main() {
     }
 
     bool mode = false;  // Dynamixel start/stop mode
-    double k = 0.13;    // Dynamixel adjustment value
+    double k = 0.14;    // Dynamixel adjustment value
     while (true) {
 
         tm.start();
